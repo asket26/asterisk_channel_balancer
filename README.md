@@ -16,7 +16,7 @@
 1. Добавляем код AEL из balanced_call.ael   в extensions.ael
 2  Проверяем содержимое файлов odbc.ini  и odbcinst.ini  в /etc, добавляем в odbc.ini  ast_routes , при необходимости меняем в ней название базы
 3. Создаем базу для астериска или используем готовую и заливаем в нее таблицу balanced_call_channels   из balanced_call_channels.sql . 
-4. Заливаем в свои func_odbc.conf  и res_odbc.conf содержимое из соответствующих файлов  ( в res_odbc.conf вписываем свои логи и пароль к базе ).
+4. Заливаем в свои func_odbc.conf  и res_odbc.conf содержимое из соответствующих файлов  ( в res_odbc.conf вписываем свои логин и пароль к базе ).
 
 Перестартуем модули res_odbc , func_odbc и  ael.
 Проверяем статус подключения к odbc   - "odbc show all"  - в разделе asterisk_routes  в строке Connected : должно быть yes
