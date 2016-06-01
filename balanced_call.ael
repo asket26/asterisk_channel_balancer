@@ -21,7 +21,7 @@ switch (${ODBC_FETCH_STATUS}) {
              case SUCCESS:
                 Set(ODBC_channel-state(${DCHAN},1)=);
                 NoOp( Channel ${DCHAN} for use);
-                Dial(${DCHAN}${EXTEN},90);
+                Dial(${DCHAN},90);
                 &balanced_fallback(${EXTEN});
                 break;
              default:
