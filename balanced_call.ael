@@ -10,7 +10,7 @@ _XXX.	=> {
 
 
 context balanced_dial  {
-_3[78]0X. => {
+_XXX. => {
 Set(DCHAN=${ODBC_FETCH(${ODBC_GSM_ID})});
 NoOp(Fetch status is ${ODBC_FETCH_STATUS} );
 switch (${ODBC_FETCH_STATUS}) {
