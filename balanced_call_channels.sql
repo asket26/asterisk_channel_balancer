@@ -5,10 +5,10 @@ CREATE TABLE `balanced_call_channels` (
   `group` varchar(20) NOT NULL,
   `desc` varchar(40) DEFAULT NULL,
   `dstchannel` varchar(30) NOT NULL,
-  `current-limit` bigint(20) NOT NULL,
+  `current-limit` bigint(20) DEFAULT '0',
   `current-state` tinyint(1) DEFAULT '0',
   `day-limit` bigint(20) NOT NULL,
-  `usage` bigint(20) NOT NULL,
+  `usage` bigint(20) DEFAULT '0',
   `enabled` tinyint(1) DEFAULT '1';
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
