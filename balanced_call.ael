@@ -1,7 +1,7 @@
 context balanced_call   {
 _XXX.	=> {
     NoOp( TrunkGroup is ${TRUNKGROUP} );
-    Set(ODBC_GSM_ID=${ODBC_get_channels(${TRUNKGROUP})});
+    Set(ODBC_CHANNEL_ID=${ODBC_get_channels(${TRUNKGROUP})});
     Noop( There is ${ODBCROWS} available channels );
     Set(DIALCONTEXT=balanced_dial);
     jump ${EXTEN}@balanced_dial;
@@ -11,22 +11,23 @@ _XXX.	=> {
 
 context balanced_dial  {
 _XXX. => {
-Set(DCHAN=${ODBC_FETCH(${ODBC_GSM_ID})});
+Set(DCHAN=${ODBC_FETCH(${ODBC_CHANNEL_ID})});
 NoOp(Fetch status is ${ODBC_FETCH_STATUS} );
 switch (${ODBC_FETCH_STATUS}) {
              case FAILURE:
-                NoOp( No more trunks available in group ${TRUNKGROUP});
+                NoOp( No more channels available in group ${TRUNKGROUP});
+				if ( "${FALLBACKCONTEXT}"="" ) {
+					NoOp(Balanced_call: No fallback context defined!);
+				}else{
                 jump ${EXTEN}@${FALLBACKCONTEXT};
+				};
                 break;
              case SUCCESS:
                 Set(ODBC_channel-state(${DCHAN},1)=);
                 NoOp( Channel ${DCHAN} for use);
                 Dial(${DCHAN},90);
                 &balanced_fallback(${EXTEN});
-                break;
-             default:
-                NoOp( Strange answer from ODBC_FETCH!);
-                jump ${DIALNUM}@${FALLBACKCONTEXT}; 
+                break; 
         };
     };
 
@@ -35,7 +36,7 @@ h => {
       NoOp(Dialstatus is ${DIALSTATUS});
       Set(ODBC_channel-state(${DCHAN},0)=);
       NoOp(Billsec is ${CDR(billsec)});
-      ODBCFinish(${ODBC_GSM_ID});
+      ODBCFinish(${ODBC_CHANNEL_ID});
       Set(BILLMIN=${MATH(${CDR(billsec)}/60,int)});
       if( ${MATH(${CDR(billsec)}/60)} > 0) { 
         Set(BILLMIN=$[1+${BILLMIN}]);
