@@ -61,11 +61,11 @@ Set(ODBC_channel-state(${DCHAN},0)=);
 	if ( "${DIALCONTEXT}"="" ) {
 	    NoOp(Balanced_call: No balanced_call dial  context defined! );
 		if ( "${FALLBACKCONTEXT}"="" ) {
-			NoOp(Balanced_call: No fallback context defined! Hanging up call.);
-			Hangup();
-		else
-			NoOp(Balanced_call: fallback to next context );
-		    jump ${DIALNUM}@${FALLBACKCONTEXT};
+		NoOp(Balanced_call: No fallback context defined!);
+		Hangup();
+		}else{
+		NoOp(Balanced_call: fallback to next context );
+		jump ${DIALNUM}@${FALLBACKCONTEXT};
 		};
 	} else {
 	jump ${DIALNUM}@${DIALCONTEXT};
