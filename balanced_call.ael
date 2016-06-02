@@ -1,6 +1,7 @@
 context balanced_call   {
 _XXX.	=> {
     NoOp( TrunkGroup is ${TRUNKGROUP} );
+	
     Set(ODBC_CHANNEL_ID=${ODBC_get_channels(${TRUNKGROUP})});
     Noop( There is ${ODBCROWS} available channels );
     Set(DIALCONTEXT=balanced_dial);
@@ -11,6 +12,7 @@ _XXX.	=> {
 
 context balanced_dial  {
 _XXX. => {
+Set(ODBC_balanced_check_limit=);
 Set(DCHAN=${ODBC_FETCH(${ODBC_CHANNEL_ID})});
 NoOp(Fetch status is ${ODBC_FETCH_STATUS} );
 switch (${ODBC_FETCH_STATUS}) {
