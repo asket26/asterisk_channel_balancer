@@ -1,6 +1,6 @@
 context balanced_call   {
 _XXX.	=> {
-	Set(ODBC_balanced_check_limit=);
+    Set(ODBC_channels_check_limit()=);
     NoOp( TrunkGroup is ${TRUNKGROUP} );
     Set(ODBC_CHANNEL_ID=${ODBC_get_channels(${TRUNKGROUP})});
     Noop( There is ${ODBCROWS} available channels );
