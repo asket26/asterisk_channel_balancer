@@ -10,6 +10,6 @@ CREATE TABLE `balanced_call_channels` (
   `day-limit` bigint(20) DEFAULT '0',
   `usage` bigint(20) DEFAULT '0',
   `enabled` tinyint(1) DEFAULT '1',
-  `limitdate` date DEFAULT '0';
+  `limitdate` date DEFAULT NULL;
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
