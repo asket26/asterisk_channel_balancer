@@ -1,75 +1,73 @@
 context balanced_call   {
-_XXX.	=> {
-    Set(ODBC_channels_check_limit()=);
-    NoOp( TrunkGroup is ${TRUNKGROUP} );
-    Set(ODBC_CHANNEL_ID=${ODBC_get_channels(${TRUNKGROUP})});
-    Noop( There is ${ODBCROWS} available channels );
-    Set(DIALCONTEXT=balanced_dial);
-    jump ${EXTEN}@balanced_dial;
+    _XXX.   => {
+        Set(ODBC_channels_check_limit()=);
+        NoOp( TrunkGroup is ${TRUNKGROUP} );
+        Set(ODBC_CHANNEL_ID=${ODBC_get_channels(${TRUNKGROUP})});
+        Noop( There is ${ODBCROWS} available channels );
+        Set(DIALCONTEXT=balanced_dial);
+        jump ${EXTEN}@balanced_dial;
     };
 };
 
 
 context balanced_dial  {
-_XXX. => {
-Set(DCHAN=${ODBC_FETCH(${ODBC_CHANNEL_ID})});
-NoOp(Fetch status is ${ODBC_FETCH_STATUS} );
-switch (${ODBC_FETCH_STATUS}) {
-             case FAILURE:
-                NoOp( No more channels available in group ${TRUNKGROUP});
-				if ( "${FALLBACKCONTEXT}"="" ) {
-					NoOp(Balanced_call: No fallback context defined!);
-				}else{
-                jump ${EXTEN}@${FALLBACKCONTEXT};
-				};
-                break;
-             case SUCCESS:
-                Set(ODBC_channel-state(${DCHAN},1)=);
-                NoOp( Channel ${DCHAN} for use);
-                Dial(${DCHAN},90);
-                &balanced_fallback(${EXTEN});
-                break; 
+    _XXX. => {
+        Set(DCHAN=${ODBC_FETCH(${ODBC_CHANNEL_ID})});
+        NoOp(Fetch status is ${ODBC_FETCH_STATUS} );
+        switch (${ODBC_FETCH_STATUS}) {
+        case FAILURE:
+        NoOp( No more channels available in group ${TRUNKGROUP});
+            if ( "${FALLBACKCONTEXT}"="" ) {
+                NoOp(Balanced_call: No fallback context defined!);
+            } else {
+            jump ${EXTEN}@${FALLBACKCONTEXT};
+            };
+            break;
+        case SUCCESS:
+            Set(ODBC_channel-state(${DCHAN},1)=);
+            NoOp( Channel ${DCHAN} for use);
+            Dial(${DCHAN},90);
+            &balanced_fallback(${EXTEN});
+            break; 
         };
     };
 
 
-h => { 
-      NoOp(Dialstatus is ${DIALSTATUS});
-      Set(ODBC_channel-state(${DCHAN},0)=);
-      NoOp(Billsec is ${CDR(billsec)});
-      ODBCFinish(${ODBC_CHANNEL_ID});
-      Set(BILLMIN=${MATH(${CDR(billsec)}/60,int)});
-      if( ${MATH(${CDR(billsec)}/60)} > 0) { 
-        Set(BILLMIN=$[1+${BILLMIN}]);
+    h => { 
+        NoOp(Dialstatus is ${DIALSTATUS});
+        Set(ODBC_channel-state(${DCHAN},0)=);
+        NoOp(Billsec is ${CDR(billsec)});
+        ODBCFinish(${ODBC_CHANNEL_ID});
+        Set(BILLMIN=${MATH(${CDR(billsec)}/60,int)});
+        if( ${MATH(${CDR(billsec)}/60)} > 0) { 
+            Set(BILLMIN=$[1+${BILLMIN}]);
         };
-      Set(ODBC_current-limit(${DCHAN},${BILLMIN})=);
-      Set(ODBC_channel-usage(${DCHAN},${BILLMIN})=);
+        Set(ODBC_current-limit(${DCHAN},${BILLMIN})=);
+        Set(ODBC_channel-usage(${DCHAN},${BILLMIN})=);
     };
 }; 
 
 
 macro balanced_fallback(DIALNUM) {
-NoOp( Dialstatus is ${DIALSTATUS} );
-Set(ODBC_channel-state(${DCHAN},0)=);
-	if ( "${DIALSTATUS}"="BUSY") {  
-        Busy();
-	};
-
-	if ( "${DIALSTATUS}"="NOANSWER") {  
-        Hangup(17);
-	};
-
-	if ( "${DIALCONTEXT}"="" ) {
-	    NoOp(Balanced_call: No balanced_call dial  context defined! );
-		if ( "${FALLBACKCONTEXT}"="" ) {
-		NoOp(Balanced_call: No fallback context defined!);
-		Hangup();
-		}else{
-		NoOp(Balanced_call: fallback to next context );
-		jump ${DIALNUM}@${FALLBACKCONTEXT};
-		};
-	} else {
-	jump ${DIALNUM}@${DIALCONTEXT};
-	};
-return;
+    NoOp( Dialstatus is ${DIALSTATUS} );
+    Set(ODBC_channel-state(${DCHAN},0)=);
+        if ( "${DIALSTATUS}"="BUSY") {  
+            Busy();
+        };
+        if ( "${DIALSTATUS}"="NOANSWER") {  
+            Hangup(17);
+        };
+        if ( "${DIALCONTEXT}"="" ) {
+            NoOp(Balanced_call: No balanced_call dial  context defined! );
+            if ( "${FALLBACKCONTEXT}"="" ) {
+                NoOp(Balanced_call: No fallback context defined!);
+                Hangup();
+            } else {
+                NoOp(Balanced_call: fallback to next context );
+                jump ${DIALNUM}@${FALLBACKCONTEXT};
+            };
+        } else {
+            jump ${DIALNUM}@${DIALCONTEXT};
+        };
+    return;
 };
